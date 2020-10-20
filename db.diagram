@@ -1,0 +1,224 @@
+
+Table buss {
+  id int [primary key]
+  mark varchar
+  created_at datetime
+  gps int
+  capacity int
+}
+
+Ref: buss.gps > GPSService.id
+
+Table GPSService {
+  id int [primary key]
+}
+
+Table driver {
+  id int [primary key]
+  expirience float
+}
+Ref: driver.id > buss.id
+Ref: driver.id > user.id
+
+Table trip {
+  id int [primary key]
+  buss int
+  time_trip datetime
+  start_time datetime
+  end_time datetime
+  path varchar
+  price float
+}
+Ref: trip.path > path.id
+Ref: trip.buss > buss.id
+
+Table path {
+  id int [primary key]
+  city varchar
+  title varchar
+  cities_array int[]
+  
+  // unique code of path
+  // it can by QR code... May be
+  // need to add Table QRcode?
+  code varchar
+}
+
+Ref: path.cities_array > city.id
+Ref: path.city > city.id
+
+Table city {
+  id int [primary key]
+  name varchar
+  created_at datetime
+}
+
+Table station {
+  id int [primary key]
+  city int
+}
+Ref: station.city > city.id
+
+Table seller {
+  id int [primary key]
+  user_id int
+  station int
+  registered datetime
+}
+Ref: seller.station > station.id
+Ref: seller.user_id > user.id
+
+Table ticket {
+  id int [primary key]
+  code varchar
+  start_time datetime
+  end_time datetime
+  station int
+  price float
+  client int
+  discount int
+  created_at datetime
+  company int
+}
+
+Ref: ticket.company > Company.id
+Ref: ticket.client > Client.id
+Ref: ticket.start_time > trip.start_time
+Ref: ticket.end_time > trip.end_time
+Ref: ticket.station > station.id
+Ref: ticket.price > trip.price
+Ref: ticket.discount > Client.discount
+
+Table Client {
+  id int [primary key]
+  discount float
+}
+Ref: Client.id > user.id
+Ref: Client.discount > discount.id
+
+
+Table discount {
+  id int [primary key]
+  amount float 
+}
+
+Table user  [headercolor: #f39c12] {
+  id int [primary key]
+  usertype text
+  email text
+  first_login text
+  address text
+  address_lat text
+  address_lng text
+  phone text
+  avatar text
+}
+
+Table UserToken {
+  id int [primary key]
+  parent int
+  email text
+  token text
+  accepted boolean
+  expired boolean
+  expired_time datetime
+  timestamp datetime
+}
+
+Ref: UserToken.parent > user.id
+Ref: "ticket"."id" < "path"."id"
+
+Table Company {
+  id int [primary key]
+  name varchar
+  // national, private
+  type varchar
+  cities_array int
+  
+}
+Ref: seller.id > Company.id
+Ref: Company.cities_array > city.id
+
+Table Manager {
+  id int [primary key]
+  company int
+  
+  // national, private
+  type varchar
+}
+
+Ref: Manager.company > Company.id
+
+Table Post {
+  id int [primary key]
+  title varchar
+  author int
+  body text
+  tags int
+  category int
+  place int
+}
+
+Ref: Post.author > user.id
+Ref: Post.tags > Tag.id
+Ref: Post.category > Category.id
+Ref: Post.place > city.id
+
+Table Tag {
+  id int [primary key]
+  name varchar
+}
+
+Table Category {
+  id int [primary key]
+  name varchar
+}
+
+Table Media {
+  id int [primary key]
+  user int
+  media_type varchar
+  media_size int
+  object_type varchar
+  object_id int
+  created_at datetime
+}
+Ref: Media.user > user.id
+
+Table Order {
+  id int [primary key]
+  user int
+  trip int
+  paid boolean
+  paymant int
+  seller int
+  company int
+  created_at datetime
+  updated_at datetime
+}
+
+Ref: Order.user > user.id
+Ref: Order.trip > trip.id
+Ref: Order.seller > seller.id
+Ref: Order.company > Company.id
+Ref: Order.paymant > PaymentOrder.id
+
+
+Table PaymentOrder {
+  id int [primary key]
+  uuid varchar
+  complete boolean
+  created_at datetime
+  updated_at datetime
+}
+
+
+Table Feedback {
+  id int [primary key]
+  user int
+  content text
+  rating int
+  object_type varchar
+  object_id int
+}
+Ref: Feedback.user > user.id
